@@ -21,10 +21,6 @@ const navbarList = document.querySelector("#navbar__list");
 
 const sections = document.querySelectorAll("section");
 
-const main = document.querySelector("main");
-
-let sectionInViewport = null;
-
 /**
  * End Global Variables
  * Start Helper Functions
@@ -70,19 +66,20 @@ const isInViewport = (element) => {
 };
 
 const getSectionInViewport = (sections) => {
-  const oldSectionInViewport = sectionInViewport;
+  const main = document.querySelector("main");
+  const sectionInViewport = main.querySelector(".active");
+
   for (const element of sections) {
     const isSectionInViewport = isInViewport(element);
-    if (isSectionInViewport && oldSectionInViewport !== element) {
+    if (isSectionInViewport && sectionInViewport !== element) {
       // to reduce number of reflows
       main.style.display = "none";
 
-      sectionInViewport = element;
-      if (oldSectionInViewport) {
-        oldSectionInViewport.classList.remove("active");
+      if (sectionInViewport) {
+        sectionInViewport.classList.remove("active");
       }
 
-      sectionInViewport.classList.add("active");
+      element.classList.add("active");
       // to reduce number of reflows
       main.style.display = "block";
       break;
