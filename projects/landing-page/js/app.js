@@ -27,19 +27,6 @@ const sections = document.querySelectorAll("section");
  *
  */
 
-const addSections = (sections) => {
-  const fragment = document.createDocumentFragment();
-
-  for (const element of sections) {
-    const linkElement = document.createElement("a");
-    linkElement.innerText = element.getAttribute("data-nav");
-    linkElement.setAttribute("href", `#${element.getAttribute("id")}`);
-    fragment.appendChild(linkElement);
-  }
-
-  navbarList.appendChild(fragment);
-};
-
 /**
  * Inspired by:
  * https://www.javascripttutorial.net/dom/css/check-if-an-element-is-visible-in-the-viewport/
@@ -65,28 +52,6 @@ const isInViewport = (element) => {
   );
 };
 
-const getSectionInViewport = (sections) => {
-  const main = document.querySelector("main");
-  const sectionInViewport = main.querySelector(".active");
-
-  for (const element of sections) {
-    const isSectionInViewport = isInViewport(element);
-    if (isSectionInViewport && sectionInViewport !== element) {
-      // to reduce number of reflows
-      main.style.display = "none";
-
-      if (sectionInViewport) {
-        sectionInViewport.classList.remove("active");
-      }
-
-      element.classList.add("active");
-      // to reduce number of reflows
-      main.style.display = "block";
-      break;
-    }
-  }
-};
-
 /**
  * End Helper Functions
  * Begin Main Functions
@@ -95,15 +60,55 @@ const getSectionInViewport = (sections) => {
 
 // build the nav
 
-addSections(sections);
+const addSections = (sections) => {
+  const fragment = document.createDocumentFragment();
+
+  for (const element of sections) {
+    const listItem = document.createElement("li");
+    const linkElement = document.createElement("a");
+    linkElement.innerText = element.getAttribute("data-nav");
+    linkElement.setAttribute("href", `#${element.getAttribute("id")}`);
+    linkElement.setAttribute("class", "menu__link");
+    listItem.appendChild(linkElement);
+    fragment.appendChild(listItem);
+  }
+
+  navbarList.appendChild(fragment);
+};
 
 // Add class 'active' to section when near top of viewport
+const getSectionInViewport = (sections) => {
+  const main = document.querySelector("main");
+  const sectionInViewport = main.querySelector(".your-active-class");
 
-document.addEventListener("scroll", () =>
-  console.log(getSectionInViewport(sections))
-);
+  for (const element of sections) {
+    const isSectionInViewport = isInViewport(element);
+    if (isSectionInViewport && sectionInViewport !== element) {
+      // to reduce number of reflows
+      main.style.display = "none";
+
+      if (sectionInViewport) {
+        sectionInViewport.classList.remove("your-active-class");
+      }
+
+      element.classList.add("your-active-class");
+      // to reduce number of reflows
+      main.style.display = "block";
+      break;
+    }
+  }
+};
 
 // Scroll to anchor ID using scrollTO event
+
+const scrollToSection = (e) => {
+  if (e.target.nodeName === "A") {
+    e.preventDefault();
+    const section = e.target.getAttribute("href");
+    const { top } = document.querySelector(section).getBoundingClientRect();
+    window.scrollTo({ top: top + window.pageYOffset, behavior: "smooth" });
+  }
+};
 
 /**
  * End Main Functions
@@ -112,7 +117,10 @@ document.addEventListener("scroll", () =>
  */
 
 // Build menu
+addSections(sections);
 
 // Scroll to section on link click
+navbarList.addEventListener("click", scrollToSection);
 
 // Set sections as active
+document.addEventListener("scroll", () => getSectionInViewport(sections));
